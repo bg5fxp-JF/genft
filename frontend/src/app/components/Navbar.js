@@ -14,15 +14,15 @@ export default function Navbar() {
 			>
 				<div className="flex gap-x-10 items-center justify-between ">
 					<Link href="/" className="text-2xl font-bold">
-						GeNfT
+						Ge<span className="text-primary1">N</span>FT
 					</Link>
 					<div className="hidden gap-x-5 text-accent1 md:flex ">
 						<div className="border-l-2 border-accent1"></div>
 
-						<Link href="/shoes" className="text-reg">
+						<Link href="/mint" className="text-reg">
 							Mint
 						</Link>
-						<Link href="/listshoes" className="text-reg ">
+						<Link href="/stake" className="text-reg ">
 							Stake
 						</Link>
 					</div>
