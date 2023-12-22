@@ -2,7 +2,7 @@ import Navbar from "./components/Navbar";
 import "./globals.css";
 
 export const metadata = {
-	title: "GeNfT",
+	title: "GeNFT",
 	description: "Generate NFT's based on your prompt and stake them for rewards",
 };
 

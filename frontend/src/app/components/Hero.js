@@ -15,7 +15,7 @@ export default function Hero() {
 					className="relative flex flex-col pb-6  z-40"
 				>
 					<h3 className="text-4xl text-txt1 font-semibold text-center md:text-6xl ">
-						GeNfT
+						Ge<span className="text-primary1">N</span>FT
 					</h3>
 					<p className="my-4 capitalize text-center text-txt2 md:text-lg md:my-6 p-1 rounded bg-bg1 backdrop-filter backdrop-blur-sm bg-opacity-10">
 						Generate NFT's based on your prompt and stake them for rewards
@@ -23,7 +23,7 @@ export default function Hero() {
 					<div className="flex gap-x-4 mx-auto mt-4 ">
 						<CustomLinkButton
 							text="Mint"
-							link="/"
+							link="/mint"
 							styles=" text-white bg-gradient-160 from-primary2 from-20% to-primary1"
 						/>
 						<CustomLinkButton
