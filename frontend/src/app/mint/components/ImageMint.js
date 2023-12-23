@@ -5,6 +5,9 @@ import { useState } from "react";
 import OpenAI from "openai";
 import Loader from "./Loader";
 import CustomLinkButton from "@/app/components/CustomLinkButton";
+import axiosRetry from "axios-retry";
+import axios from "axios";
+import FormData from "form-data";
 
 export default function ImageMint() {
 	const isConnected = true;
@@ -16,9 +19,10 @@ export default function ImageMint() {
 	const [imageUrl, setImageUrl] = useState("/");
 	const [userPrompt, setUserPrompt] = useState("");
 	const [generatingImg, setGeneratingImg] = useState(false);
+	const [minting, setMinting] = useState(false);
 	function handlePromptChange(e) {
 		setUserPrompt(e.target.value);
-		console.log(prompt);
+		// console.log(userPrompt);
 		// formatFormData(formData);
 	}
 
@@ -43,7 +47,7 @@ export default function ImageMint() {
 			await setTimeout(() => {
 				//C - 1 second later
 				setImageUrl(
-					"https://oaidalleapiprodscus.blob.core.windows.net/private/org-Sh4klIMQC1yCCn287953rOWd/user-xmseufWOKmj6UTNcNqlrZWcL/img-92xRJt20q29BPayzueKyf6KG.png?st=2023-12-22T14%3A04%3A40Z&se=2023-12-22T16%3A04%3A40Z&sp=r&sv=2021-08-06&sr=b&rscd=inline&rsct=image/png&skoid=6aaadede-4fb3-4698-a8f6-684d7786b067&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2023-12-21T23%3A12%3A05Z&ske=2023-12-22T23%3A12%3A05Z&sks=b&skv=2021-08-06&sig=8e48BouNj2vNML4dmll%2BxkL43W48zKxG9sj4weC6Qc4%3D"
+					"https://img.freepik.com/free-photo/3d-rendering-dog-puzzle_23-2150780914.jpg?uid=R131559868&semt=ais_ai_generated"
 				);
 				setGeneratingImg(false);
 			}, 2000);
@@ -54,13 +58,96 @@ export default function ImageMint() {
 			// setGeneratingImg(false);
 		}
 	}
+
+	async function uploadFileToPinata(sourceUrl) {
+		const axiosInstance = axios.create();
+		axiosRetry(axiosInstance, { retries: 5 });
+
+		const data = new FormData();
+
+		const response = await axiosInstance(sourceUrl, {
+			method: "GET",
+			responseType: "arraybuffer",
+		});
+		const blob = new Blob([response.data], { type: "image/png" });
+
+		data.append(`file`, blob);
+
+		const metadata = JSON.stringify({
+			name: userPrompt,
+		});
+		data.append("pinataMetadata", metadata);
+
+		const options = JSON.stringify({
+			cidVersion: 0,
+		});
+		data.append("pinataOptions", options);
+
+		try {
+			const res = await axios.post(
+				"https://api.pinata.cloud/pinning/pinFileToIPFS",
+				data,
+				{
+					maxBodyLength: "Infinity",
+					headers: {
+						"Content-Type": `multipart/form-data; boundary=${data._boundary}`,
+						Authorization: `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT}`,
+					},
+				}
+			);
+			console.log(res.data);
+			return process.env.NEXT_PUBLIC_GATEWAY_URL + "/ipfs/" + res.data.IpfsHash;
+		} catch (error) {
+			console.log(error);
+		}
+	}
+	async function uploadMetadataToPinata(imageUri) {
+		const creationDate = new Date().toISOString().split("T")[0];
+
+		const data = JSON.stringify({
+			pinataContent: {
+				collection: "GeNFT Artists",
+				name: userPrompt,
+				artist: "0xcc6cfe1a015ecce15176bfabaa2473728da0898f",
+				creationDate: creationDate,
+				image: imageUri,
+			},
+			pinataMetadata: {
+				name: "metadata.json",
+			},
+		});
+
+		try {
+			const res = await axios.post(
+				"https://api.pinata.cloud/pinning/pinJSONToIPFS",
+				data,
+				{
+					headers: {
+						"Content-Type": "application/json",
+						Authorization: `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT}`,
+					},
+				}
+			);
+			console.log(res.data);
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	async function mint(sourceUrl) {
+		setMinting(true);
+		const imageUri = await uploadFileToPinata(sourceUrl);
+		await uploadMetadataToPinata(imageUri);
+		setMinting(false);
+	}
+
 	return (
 		<>
 			<div className="relative bg-bg2   text-gray-900 text-sm rounded-lg w-64 mx-auto p-3 h-64 flex justify-center items-center">
 				{imageUrl != "/" ? (
 					<Image
 						src={imageUrl}
-						alt={prompt}
+						alt={userPrompt}
 						width={100}
 						height={100}
 						className="w-full h-full object-contain"
@@ -99,13 +186,15 @@ export default function ImageMint() {
 				</button>
 			</div>
 			<div className="flex flex-col gap-y-4 mx-auto mt-4 ">
-				<CustomLinkButton
-					text="Mint"
-					link="/"
-					styles={`text-primary2 border border-primary2 transition-all ${
+				<button
+					className={`text-reg flex  px-4 py-2 rounded-full transition-all active:scale-95 text-primary2 border border-primary2 ${
 						imageUrl == "/" ? "opacity-0" : "opacity-100"
 					}`}
-				/>
+					onClick={() => mint(imageUrl)}
+					disabled={minting}
+				>
+					Mint{minting && "ing..."}
+				</button>
 			</div>
 		</>
 	);
