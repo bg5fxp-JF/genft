@@ -9,6 +9,9 @@ import axiosRetry from "axios-retry";
 import axios from "axios";
 import FormData from "form-data";
 
+import { initializeApp } from "firebase/app";
+import { getStorage, ref, uploadString } from "firebase/storage";
+
 export default function ImageMint() {
 	const isConnected = true;
 	const openai = new OpenAI({
@@ -25,6 +28,18 @@ export default function ImageMint() {
 		// console.log(userPrompt);
 		// formatFormData(formData);
 	}
+
+	// TODO: Replace the following with your app's Firebase project configuration
+	// See: https://firebase.google.com/docs/web/learn-more#config-object
+	const firebaseConfig = {
+		storageBucket: "gs://genft-7f0a3.appspot.com",
+	};
+
+	// Initialize Firebase
+	const app = initializeApp(firebaseConfig);
+
+	// Initialize Cloud Storage and get a reference to the service
+	const storage = getStorage(app);
 
 	async function imageGeneration() {
 		if (!isConnected) {
@@ -133,11 +148,32 @@ export default function ImageMint() {
 			console.log(error);
 		}
 	}
+	async function uploadMetadataToFirebase(imageUri) {
+		const storageRef = ref(storage, "metadata/1.json");
+		const jsonContent = JSON.stringify({
+			description: userPrompt,
+			external_url: "https://genft.com",
+			image: imageUri,
+			name: "GeNFT Artists #1",
+		});
+
+		try {
+			const snapshot = await uploadString(storageRef, jsonContent, "raw", {
+				contentType: "application/json",
+			});
+
+			console.log(snapshot.metadata.fullPath);
+		} catch (error) {
+			console.log("Error uploading JSON:", error);
+		}
+	}
 
 	async function mint(sourceUrl) {
 		setMinting(true);
+
 		const imageUri = await uploadFileToPinata(sourceUrl);
-		await uploadMetadataToPinata(imageUri);
+
+		await uploadMetadataToFirebase(imageUri).catch();
 		setMinting(false);
 	}
 
