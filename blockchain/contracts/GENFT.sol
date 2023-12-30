@@ -10,6 +10,7 @@ import "@openzeppelin/contracts/utils/Strings.sol";
 
 error NotEnoughFunds();
 error MaxNFTsMinted();
+error WithdrawUnsuccessful();
 
 contract GENFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Pausable, Ownable {
     uint256 private _nextTokenId;
@@ -18,6 +19,11 @@ contract GENFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Pausable, Ow
 
     constructor(address initalOwner, uint256 _maxSupply) ERC721("GENFT", "GNT") Ownable(initalOwner) {
         i_maxSupply = _maxSupply;
+    }
+
+    function withdraw() external onlyOwner {
+        (bool success,) = payable(msg.sender).call{value: address(this).balance}("");
+        if (!success) revert WithdrawUnsuccessful();
     }
 
     function pause() public onlyOwner {
