@@ -4,11 +4,13 @@ pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/interfaces/IERC20.sol";
 import "@openzeppelin/contracts/interfaces/IERC721.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import "@openzeppelin/contracts/token/ERC721/utils/ERC721Holder.sol";
+import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
 
 error NotOwnerOfNFT();
 error NFTWasNotStaked();
 
-contract Staking {
+contract Staking is IERC721Receiver, ERC721Holder {
     using SafeERC20 for IERC20;
 
     IERC20 immutable tokgen;
@@ -39,6 +41,7 @@ contract Staking {
         delete stakes[msg.sender][_tokenId];
 
         tokgen.safeTransfer(msg.sender, reward);
+        emit NFTUnstaked(msg.sender, _tokenId, block.timestamp, reward);
     }
 
     function calculateReward(uint256 _tokenId) private view returns (uint256 reward) {
