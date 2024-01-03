@@ -2,37 +2,80 @@ const { deployments, network } = require("hardhat");
 require("dotenv").config();
 const fs = require("fs");
 
-const FRONTEND_ADDRESSES_FILE =
-	"../frontend/src/app/constants/contractAddresses.json";
-const FRONTEND_ABI_FILE = "../frontend/src/app/constants/abi.json";
+const FRONTEND_TOKGEN_ADDRESSES_FILE =
+	"../frontend/src/app/constants/tokgen-contractAddresses.json";
+const FRONTEND_GENFT_ADDRESSES_FILE =
+	"../frontend/src/app/constants/genft-contractAddresses.json";
+const FRONTEND_STAKING_ADDRESSES_FILE =
+	"../frontend/src/app/constants/staking-contractAddresses.json";
+const FRONTEND_TOKGEN_ABI_FILE =
+	"../frontend/src/app/constants/tokgen-abi.json";
+const FRONTEND_GENFT_ABI_FILE = "../frontend/src/app/constants/genft-abi.json";
+const FRONTEND_STAKING_ABI_FILE =
+	"../frontend/src/app/constants/staking-abi.json";
 
 async function updateAbi() {
-	const competitionAbi = (await deployments.fixture(["competition"]))
-		.Competition.abi;
+	const tokegnAbi = (await deployments.fixture(["all"])).Tokgen.abi;
+	const genftAbi = (await deployments.fixture(["all"])).GENFT.abi;
+	const stakingAbi = (await deployments.fixture(["all"])).Staking.abi;
 
-	fs.writeFileSync(FRONTEND_ABI_FILE, JSON.stringify(competitionAbi));
+	fs.writeFileSync(FRONTEND_TOKGEN_ABI_FILE, JSON.stringify(tokegnAbi));
+	fs.writeFileSync(FRONTEND_GENFT_ABI_FILE, JSON.stringify(genftAbi));
+	fs.writeFileSync(FRONTEND_STAKING_ABI_FILE, JSON.stringify(stakingAbi));
 }
 
 async function updateContractAddresses() {
-	const competitionAddress = (await deployments.fixture(["competition"]))
-		.Competition.address;
+	const tokgenAddress = (await deployments.fixture(["all"])).Tokgen.address;
+	const genftAddress = (await deployments.fixture(["all"])).GENFT.address;
+	const stakingAddress = (await deployments.fixture(["all"])).Staking.address;
 	const chainId = network.config.chainId.toString();
-	const currentAddress = JSON.parse(
-		fs.readFileSync(FRONTEND_ADDRESSES_FILE, "utf8")
+	const currentTokgenAddress = JSON.parse(
+		fs.readFileSync(FRONTEND_TOKGEN_ADDRESSES_FILE, "utf8")
 	);
-	if (chainId in currentAddress) {
-		if (!currentAddress[chainId].includes(competitionAddress)) {
-			currentAddress[chainId].push(competitionAddress);
+	const currentGenftAddress = JSON.parse(
+		fs.readFileSync(FRONTEND_GENFT_ADDRESSES_FILE, "utf8")
+	);
+	const currentStakingAddress = JSON.parse(
+		fs.readFileSync(FRONTEND_STAKING_ADDRESSES_FILE, "utf8")
+	);
+	if (chainId in currentTokgenAddress) {
+		if (!currentTokgenAddress[chainId].includes(tokgenAddress)) {
+			currentTokgenAddress[chainId].push(tokgenAddress);
 		}
 	} else {
-		currentAddress[chainId] = [competitionAddress];
+		currentTokgenAddress[chainId] = [tokgenAddress];
+	}
+	if (chainId in currentGenftAddress) {
+		if (!currentGenftAddress[chainId].includes(genftAddress)) {
+			currentGenftAddress[chainId].push(genftAddress);
+		}
+	} else {
+		currentGenftAddress[chainId] = [genftAddress];
+	}
+	if (chainId in currentStakingAddress) {
+		if (!currentStakingAddress[chainId].includes(stakingAddress)) {
+			currentStakingAddress[chainId].push(stakingAddress);
+		}
+	} else {
+		currentStakingAddress[chainId] = [stakingAddress];
 	}
 
-	fs.writeFileSync(FRONTEND_ADDRESSES_FILE, JSON.stringify(currentAddress));
+	fs.writeFileSync(
+		FRONTEND_TOKGEN_ADDRESSES_FILE,
+		JSON.stringify(currentTokgenAddress)
+	);
+	fs.writeFileSync(
+		FRONTEND_GENFT_ADDRESSES_FILE,
+		JSON.stringify(currentGenftAddress)
+	);
+	fs.writeFileSync(
+		FRONTEND_STAKING_ADDRESSES_FILE,
+		JSON.stringify(currentStakingAddress)
+	);
 }
 
 module.exports = async function () {
-	if (process.env.UPDATE_FRONTEND == true) {
+	if (process.env.UPDATE_FRONTEND) {
 		console.log("Updating frontend");
 		await updateAbi();
 		await updateContractAddresses();
