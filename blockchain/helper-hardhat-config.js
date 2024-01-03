@@ -1,5 +1,5 @@
 const developmentChains = ["hardhat", "localhost"];
-const MAX_SUPPLY = 3;
+const MAX_SUPPLY = 1000;
 
 module.exports = {
 	developmentChains,
