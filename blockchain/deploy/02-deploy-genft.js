@@ -31,4 +31,4 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 	}
 };
 
-module.exports.tags = ["all", "genft"];
+module.exports.tags = ["all", "genft", "prelim"];
