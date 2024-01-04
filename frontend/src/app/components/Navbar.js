@@ -2,14 +2,17 @@
 import Link from "next/link";
 import ConnectButton from "./ConnectButton";
 import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
+	const pathname = usePathname();
 	return (
 		<header className="w-full absolute z-50">
 			<motion.nav
-				initial={{ opacity: 0, y: -10 }}
-				whileInView={{ opacity: 1, y: 0 }}
-				viewport={{ once: true }}
+				initial={
+					pathname == "/" ? { opacity: 0, y: -10 } : { opacity: 1, y: 0 }
+				}
+				animate={{ opacity: 1, y: 0 }}
 				className="flex justify-between items-center max-w-[1440px] mx-3 my-3 px-3 py-4 bg-bg3 backdrop-filter backdrop-blur-sm bg-opacity-10 rounded-lg text-txt1 sm:px-8 sm:mx-8"
 			>
 				<div className="flex gap-x-10 items-center justify-between ">
