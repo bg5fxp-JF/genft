@@ -72,4 +72,8 @@ contract Staking is IERC721Receiver, ERC721Holder {
     function getGenftAddress() public view returns (address) {
         return (address(genft));
     }
+
+    function getIsStaked(uint256 _tokenId) public view returns (bool) {
+        return (hasStaked[msg.sender][_tokenId]);
+    }
 }
