@@ -1,19 +1,65 @@
 "use client";
 import Image from "next/image";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import OpenAI from "openai";
 import Loader from "./Loader";
-import CustomLinkButton from "@/app/components/CustomLinkButton";
 import axiosRetry from "axios-retry";
 import axios from "axios";
 import FormData from "form-data";
+import { parseEther } from "viem";
 
 import { initializeApp } from "firebase/app";
-import { getStorage, ref, uploadString } from "firebase/storage";
+import { getStorage, ref, uploadString, deleteObject } from "firebase/storage";
+import {
+	useAccount,
+	useContractRead,
+	useContractWrite,
+	useNetwork,
+} from "wagmi";
+import { genft_abi } from "@/app/constants/abis";
+import { genft_contractAddresses } from "@/app/constants/contracts";
 
 export default function ImageMint() {
-	const isConnected = true;
+	const { isConnected } = useAccount();
+	const { chain } = useNetwork();
+
+	const chainId = isConnected ? chain.id : 0;
+	const genftAddress =
+		chainId in genft_contractAddresses
+			? genft_contractAddresses[chainId][0]
+			: null;
+
+	const { data: totalSupply } = useContractRead({
+		address: genftAddress,
+		abi: genft_abi,
+		functionName: "totalSupply",
+		watch: true,
+	});
+
+	const { write } = useContractWrite({
+		address: genftAddress,
+		abi: genft_abi,
+		functionName: "publicMint",
+		value: parseEther("0.01"),
+		onError(error) {
+			deleteUpload().then(() => {
+				setMinting(false);
+				window.alert(error.message);
+			});
+		},
+		onSuccess() {
+			setMinting(false);
+			setImageUrl("/");
+			window.alert("Successful Mint");
+		},
+	});
+
+	async function deleteUpload() {
+		const storageRef = ref(storage, `metadata/${totalSupply}.json`);
+		await deleteObject(storageRef);
+	}
+
 	const openai = new OpenAI({
 		apiKey: process.env.NEXT_PUBLIC_OPEN_AI,
 		dangerouslyAllowBrowser: true,
@@ -25,12 +71,8 @@ export default function ImageMint() {
 	const [minting, setMinting] = useState(false);
 	function handlePromptChange(e) {
 		setUserPrompt(e.target.value);
-		// console.log(userPrompt);
-		// formatFormData(formData);
 	}
 
-	// TODO: Replace the following with your app's Firebase project configuration
-	// See: https://firebase.google.com/docs/web/learn-more#config-object
 	const firebaseConfig = {
 		storageBucket: "gs://genft-7f0a3.appspot.com",
 	};
@@ -46,31 +88,32 @@ export default function ImageMint() {
 			window.alert("Connect Wallet First");
 
 			return 0;
-		}
-		if (userPrompt == "") {
-			window.alert("Input a prompt");
-			return 0;
 		} else {
-			setGeneratingImg(true);
-			// const response = await openai.images.generate({
-			// 	model: "dall-e-3",
-			// 	prompt: userPrompt,
-			// 	n: 1,
-			// 	size: "1024x1024",
-			// });
+			if (userPrompt == "") {
+				window.alert("Input a prompt");
+				return 0;
+			} else {
+				setGeneratingImg(true);
+				// const response = await openai.images.generate({
+				// 	model: "dall-e-3",
+				// 	prompt: userPrompt,
+				// 	n: 1,
+				// 	size: "1024x1024",
+				// });
 
-			await setTimeout(() => {
-				//C - 1 second later
-				setImageUrl(
-					"https://img.freepik.com/free-photo/3d-rendering-dog-puzzle_23-2150780914.jpg?uid=R131559868&semt=ais_ai_generated"
-				);
-				setGeneratingImg(false);
-			}, 2000);
+				await setTimeout(() => {
+					//C - 1 second later
+					setImageUrl(
+						"https://img.freepik.com/free-photo/3d-rendering-dog-puzzle_23-2150780914.jpg?uid=R131559868&semt=ais_ai_generated"
+					);
+					setGeneratingImg(false);
+				}, 2000);
 
-			// image_url = response;
-			// setImageUrl(response.data[0].url);
+				// image_url = response;
+				// setImageUrl(response.data[0].url);
 
-			// setGeneratingImg(false);
+				// setGeneratingImg(false);
+			}
 		}
 	}
 
@@ -110,51 +153,20 @@ export default function ImageMint() {
 					},
 				}
 			);
-			console.log(res.data);
+
 			return process.env.NEXT_PUBLIC_GATEWAY_URL + "/ipfs/" + res.data.IpfsHash;
 		} catch (error) {
 			console.log(error);
 		}
 	}
-	async function uploadMetadataToPinata(imageUri) {
-		const creationDate = new Date().toISOString().split("T")[0];
 
-		const data = JSON.stringify({
-			pinataContent: {
-				collection: "GeNFT Artists",
-				name: userPrompt,
-				artist: "0xcc6cfe1a015ecce15176bfabaa2473728da0898f",
-				creationDate: creationDate,
-				image: imageUri,
-			},
-			pinataMetadata: {
-				name: "metadata.json",
-			},
-		});
-
-		try {
-			const res = await axios.post(
-				"https://api.pinata.cloud/pinning/pinJSONToIPFS",
-				data,
-				{
-					headers: {
-						"Content-Type": "application/json",
-						Authorization: `Bearer ${process.env.NEXT_PUBLIC_PINATA_JWT}`,
-					},
-				}
-			);
-			console.log(res.data);
-		} catch (error) {
-			console.log(error);
-		}
-	}
 	async function uploadMetadataToFirebase(imageUri) {
-		const storageRef = ref(storage, "metadata/1.json");
+		const storageRef = ref(storage, `metadata/${totalSupply}.json`);
 		const jsonContent = JSON.stringify({
 			description: userPrompt,
 			external_url: "https://genft.com",
 			image: imageUri,
-			name: "GeNFT Artists #1",
+			name: `GeNFT Artists #${totalSupply}`,
 		});
 
 		try {
@@ -162,7 +174,7 @@ export default function ImageMint() {
 				contentType: "application/json",
 			});
 
-			console.log(snapshot.metadata.fullPath);
+			// console.log(snapshot.metadata.fullPath);
 		} catch (error) {
 			console.log("Error uploading JSON:", error);
 		}
@@ -174,7 +186,8 @@ export default function ImageMint() {
 		const imageUri = await uploadFileToPinata(sourceUrl);
 
 		await uploadMetadataToFirebase(imageUri).catch();
-		setMinting(false);
+
+		write();
 	}
 
 	return (
@@ -221,16 +234,21 @@ export default function ImageMint() {
 					Generate
 				</button>
 			</div>
-			<div className="flex flex-col gap-y-4 mx-auto mt-4 ">
+			<div
+				className={`flex flex-col gap-y-4 items-center mx-auto  mt-4  ${
+					imageUrl == "/" || !isConnected ? "opacity-0" : "opacity-100"
+				}`}
+			>
 				<button
 					className={`text-reg flex  px-4 py-2 rounded-full transition-all active:scale-95 text-primary2 border border-primary2 ${
-						imageUrl == "/" ? "opacity-0" : "opacity-100"
+						imageUrl == "/" || !isConnected ? "pointer-events-none" : ""
 					}`}
 					onClick={() => mint(imageUrl)}
 					disabled={minting}
 				>
 					Mint{minting && "ing..."}
 				</button>
+				<p className="text-primary2 text-xsm">*0.01 ETH minting fee</p>
 			</div>
 		</>
 	);
