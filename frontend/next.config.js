@@ -12,6 +12,11 @@ const nextConfig = {
 				hostname: "oaidalleapiprodscus.blob.core.windows.net",
 				port: "",
 			},
+			{
+				protocol: "https",
+				hostname: "salmon-faithful-giraffe-726.mypinata.cloud",
+				port: "",
+			},
 		],
 	},
 };
