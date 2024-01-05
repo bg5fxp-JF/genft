@@ -1,14 +1,14 @@
 "use client";
 import Image from "next/image";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import OpenAI from "openai";
 import Loader from "./Loader";
 import axiosRetry from "axios-retry";
 import axios from "axios";
 import FormData from "form-data";
 import { parseEther } from "viem";
-
+import { toast } from "react-toastify";
 import { initializeApp } from "firebase/app";
 import { getStorage, ref, uploadString, deleteObject } from "firebase/storage";
 import {
@@ -19,6 +19,7 @@ import {
 } from "wagmi";
 import { genft_abi } from "@/app/constants/abis";
 import { genft_contractAddresses } from "@/app/constants/contracts";
+import { storageBuckets } from "@/app/constants/constants";
 
 export default function ImageMint() {
 	const { isConnected } = useAccount();
@@ -45,13 +46,14 @@ export default function ImageMint() {
 		onError(error) {
 			deleteUpload().then(() => {
 				setMinting(false);
-				window.alert(error.message);
+				toast.error(error.message);
 			});
 		},
 		onSuccess() {
 			setMinting(false);
 			setImageUrl("/");
-			window.alert("Successful Mint");
+			setUserPrompt("");
+			toast.success("Successfully Minted");
 		},
 	});
 
@@ -74,7 +76,7 @@ export default function ImageMint() {
 	}
 
 	const firebaseConfig = {
-		storageBucket: "gs://genft-7f0a3.appspot.com",
+		storageBucket: storageBuckets[chain.id],
 	};
 
 	// Initialize Firebase
@@ -85,12 +87,12 @@ export default function ImageMint() {
 
 	async function imageGeneration() {
 		if (!isConnected) {
-			window.alert("Connect Wallet First");
+			toast.warn("Connect Wallet First");
 
 			return 0;
 		} else {
 			if (userPrompt == "") {
-				window.alert("Input a prompt");
+				toast.warn("Input a prompt");
 				return 0;
 			} else {
 				setGeneratingImg(true);
@@ -109,7 +111,6 @@ export default function ImageMint() {
 					setGeneratingImg(false);
 				}, 2000);
 
-				// image_url = response;
 				// setImageUrl(response.data[0].url);
 
 				// setGeneratingImg(false);

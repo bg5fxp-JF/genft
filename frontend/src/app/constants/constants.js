@@ -10,3 +10,8 @@ export const imgs = [
 	"https://img.freepik.com/free-photo/3d-mythical-unicorn-made-from-interlocking-children-s-toys_23-2150813974.jpg?uid=R131559868&semt=ais_ai_generated",
 	"https://img.freepik.com/free-photo/panda-is-flying-galaxy-with-colorful-circle-around-it_1340-40358.jpg?uid=R131559868&semt=ais_ai_generated",
 ];
+
+export const storageBuckets = {
+	31337: "gs://genft-7f0a3.appspot.com",
+	11155111: "gs://genfttestnet.appspot.com",
+};

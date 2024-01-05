@@ -28,7 +28,7 @@ export default function Hero() {
 						/>
 						<CustomLinkButton
 							text="Stake"
-							link="/"
+							link="/stake"
 							styles="  text-primary2 border border-primary2 "
 						/>
 					</div>
