@@ -1,4 +1,3 @@
-import CustomLinkButton from "@/app/components/CustomLinkButton";
 import Image from "next/image";
 import StakeButton from "./StakeButton";
 

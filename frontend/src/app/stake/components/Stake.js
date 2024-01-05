@@ -2,8 +2,11 @@
 import { useAccount, useContractRead, useNetwork } from "wagmi";
 import { readContract } from "@wagmi/core";
 import { useEffect, useState } from "react";
-import { genft_contractAddresses } from "@/app/constants/contracts";
-import { genft_abi } from "@/app/constants/abis";
+import {
+	genft_contractAddresses,
+	staking_contractAddresses,
+} from "@/app/constants/contracts";
+import { genft_abi, staking_abi } from "@/app/constants/abis";
 import StakeCard from "./StakeCard";
 
 export default function Stake() {
@@ -12,6 +15,10 @@ export default function Stake() {
 	const [nfts, setNfts] = useState([]);
 
 	const chainId = isConnected ? chain.id : 0;
+	const stakingAddress =
+		chainId in staking_contractAddresses
+			? staking_contractAddresses[chainId][0]
+			: null;
 	const genftAddress =
 		chainId in genft_contractAddresses
 			? genft_contractAddresses[chainId][0]
@@ -26,7 +33,7 @@ export default function Stake() {
 
 	useEffect(() => {
 		let _nfts = [];
-		setNfts(_nfts);
+		setNfts([]);
 		async function getMetadata(uri) {
 			const response = await fetch(uri);
 			const metadata = await response.json();
@@ -36,13 +43,21 @@ export default function Stake() {
 
 		async function checkOwner(id) {
 			if (totalNfts > 0) {
-				const data = await readContract({
+				const owner = await readContract({
 					address: genftAddress,
 					abi: genft_abi,
 					functionName: "ownerOf",
 					args: [id],
 				});
-				if (data == address) {
+				const isStaked = await readContract({
+					address: stakingAddress,
+					abi: staking_abi,
+					functionName: "getIsStaked",
+					account: address,
+					args: [id],
+				});
+
+				if (isStaked || owner == address) {
 					const uri = `https://firebasestorage.googleapis.com/v0/b/genft-7f0a3.appspot.com/o/metadata%2F${id}.json?alt=media`;
 					getMetadata(uri);
 				}
@@ -53,6 +68,10 @@ export default function Stake() {
 			checkOwner(i);
 		}
 	}, [address, totalNfts]);
+
+	useEffect(() => {
+		setNfts([...nfts]);
+	}, [nfts.length]);
 
 	function extractTokenId(str) {
 		const regex = /#(\d+)/;
@@ -87,17 +106,19 @@ export default function Stake() {
 					Stake Your <span className="text-primary1">N</span>FTs
 				</h3>
 			</div>
-			{nfts.map(({ name, image, description }) => {
-				const tokenId = extractTokenId(name);
-				return (
-					<StakeCard
-						key={tokenId}
-						tokenId={tokenId}
-						img={image}
-						desc={description}
-					/>
-				);
-			})}
+			<div className="flex flex-col w-full gap-y-5">
+				{nfts.map(({ name, image, description }) => {
+					const tokenId = extractTokenId(name);
+					return (
+						<StakeCard
+							key={tokenId}
+							tokenId={tokenId}
+							img={image}
+							desc={description}
+						/>
+					);
+				})}
+			</div>
 		</section>
 	);
 }

@@ -11,6 +11,8 @@ import {
 	useContractWrite,
 	useNetwork,
 } from "wagmi";
+import { toast } from "react-toastify";
+import { useContractEvent } from "wagmi";
 
 export default function StakeButton({ tokenId }) {
 	const { address, isConnected } = useAccount();
@@ -31,27 +33,32 @@ export default function StakeButton({ tokenId }) {
 		abi: staking_abi,
 		functionName: "getIsStaked",
 		args: [tokenId],
+		account: address,
 		watch: true,
 	});
-	const { write: approve } = useContractWrite({
-		address: genftAddress,
-		abi: genft_abi,
-		functionName: "approve",
-		args: [stakingAddress, tokenId],
-		onError(error) {
-			window.alert(error.message);
+
+	useContractEvent({
+		address: stakingAddress,
+		abi: staking_abi,
+		eventName: "NFTStaked",
+		onLogs(logs) {
+			console.log("New logs!", logs);
+		},
+		listener(log) {
+			console.log("listener triggered", log);
 		},
 	});
+
 	const { write: stake } = useContractWrite({
 		address: stakingAddress,
 		abi: staking_abi,
 		functionName: "stake",
 		args: [tokenId],
 		onError(error) {
-			window.alert(error.message);
+			toast.error(error.message);
 		},
 		onSuccess() {
-			window.alert("Success Stake");
+			toast.success(`Successfully Staked Genft Artists #${tokenId}`);
 		},
 	});
 	const { write: unstake } = useContractWrite({
@@ -60,10 +67,24 @@ export default function StakeButton({ tokenId }) {
 		functionName: "unstake",
 		args: [tokenId],
 		onError(error) {
-			window.alert(error.message);
+			toast.error(error.message);
 		},
 		onSuccess() {
-			window.alert("Success UnStake");
+			toast.success(
+				`Successfuly Unstaked Genft Artists #${tokenId}. Rewards Sent.`
+			);
+		},
+	});
+	const { write: approve } = useContractWrite({
+		address: genftAddress,
+		abi: genft_abi,
+		functionName: "approve",
+		args: [stakingAddress, tokenId],
+		onError(error) {
+			toast.error(error.message);
+		},
+		onSuccess() {
+			stake();
 		},
 	});
 
@@ -84,7 +105,6 @@ export default function StakeButton({ tokenId }) {
 		<button
 			onClick={() => {
 				approve();
-				stake();
 			}}
 			className={`text-reg flex  px-4 py-2  rounded-full transition-all active:scale-95 text-primary2 border border-primary2 `}
 		>
