@@ -42,6 +42,7 @@ export default function ImageMint() {
 		address: genftAddress,
 		abi: genft_abi,
 		functionName: "publicMint",
+		args: [storageBuckets[chainId]],
 		value: parseEther("0.01"),
 		onError(error) {
 			deleteUpload().then(() => {

@@ -34,13 +34,15 @@ contract GENFT is ERC721, ERC721Enumerable, ERC721URIStorage, ERC721Pausable, Ow
         _unpause();
     }
 
-    function publicMint() public payable {
+    function publicMint(string memory _storagePointer) public payable {
         if (msg.value != MINT_FEE) revert NotEnoughFunds();
         if (totalSupply() >= i_maxSupply) revert MaxNFTsMinted();
         uint256 tokenId = _nextTokenId++;
         string memory _tokenURI = string(
             abi.encodePacked(
-                "https://firebasestorage.googleapis.com/v0/b/genft-7f0a3.appspot.com/o/metadata%2F",
+                "https://firebasestorage.googleapis.com/v0/b/",
+                _storagePointer,
+                "/o/metadata%2F",
                 Strings.toString(tokenId),
                 ".json?alt=media"
             )
