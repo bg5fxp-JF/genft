@@ -1,4 +1,5 @@
 import Navbar from "./components/Navbar";
+import NewToaster from "./components/NewToaster";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -14,6 +15,7 @@ export default function RootLayout({ children }) {
 				<Providers>
 					<Navbar />
 					{children}
+					<NewToaster />
 				</Providers>
 			</body>
 		</html>
