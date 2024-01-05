@@ -76,7 +76,7 @@ export default function ImageMint() {
 	}
 
 	const firebaseConfig = {
-		storageBucket: storageBuckets[chain.id],
+		storageBucket: storageBuckets[11155111],
 	};
 
 	// Initialize Firebase
