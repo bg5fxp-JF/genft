@@ -31,8 +31,10 @@ contract Staking is IERC721Receiver, ERC721Holder {
 
     function stake(uint256 _tokenId) public {
         if (genft.ownerOf(_tokenId) != msg.sender) revert NotOwnerOfNFT();
+        // map the time in which an nft was staked
         stakes[msg.sender][_tokenId] = block.timestamp;
         hasStaked[msg.sender][_tokenId] = true;
+        // transfer nft to staking contract
         genft.safeTransferFrom(msg.sender, address(this), _tokenId);
 
         emit NFTStaked(msg.sender, _tokenId, block.timestamp);
@@ -41,9 +43,11 @@ contract Staking is IERC721Receiver, ERC721Holder {
     function unstake(uint256 _tokenId) public {
         if (!hasStaked[msg.sender][_tokenId]) revert NFTWasNotStaked();
         uint256 reward = calculateReward(_tokenId);
+        // delete specfic instance of mapping
         delete stakes[msg.sender][_tokenId];
         delete hasStaked[msg.sender][_tokenId];
-
+        // transfer rewards and nft back
+        genft.safeTransferFrom(address(this), msg.sender, _tokenId);
         tokgen.safeTransfer(msg.sender, reward);
         emit NFTUnstaked(msg.sender, _tokenId, block.timestamp, reward);
     }
@@ -57,11 +61,11 @@ contract Staking is IERC721Receiver, ERC721Holder {
         if (time < 1 minutes) {
             return 0;
         } else if (time < 4 minutes) {
-            return 5;
+            return 1;
         } else if (time < 8 minutes) {
-            return 10;
+            return 2;
         } else {
-            return 15;
+            return 3;
         }
     }
 
