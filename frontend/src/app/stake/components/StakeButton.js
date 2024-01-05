@@ -37,18 +37,6 @@ export default function StakeButton({ tokenId }) {
 		watch: true,
 	});
 
-	useContractEvent({
-		address: stakingAddress,
-		abi: staking_abi,
-		eventName: "NFTStaked",
-		onLogs(logs) {
-			console.log("New logs!", logs);
-		},
-		listener(log) {
-			console.log("listener triggered", log);
-		},
-	});
-
 	const { write: stake } = useContractWrite({
 		address: stakingAddress,
 		abi: staking_abi,

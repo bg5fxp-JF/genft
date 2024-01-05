@@ -166,7 +166,7 @@ export default function ImageMint() {
 		const storageRef = ref(storage, `metadata/${totalSupply}.json`);
 		const jsonContent = JSON.stringify({
 			description: userPrompt,
-			external_url: "https://genft.com",
+			external_url: "https://ge-nft.vercel.app",
 			image: imageUri,
 			name: `GeNFT Artists #${totalSupply}`,
 		});
