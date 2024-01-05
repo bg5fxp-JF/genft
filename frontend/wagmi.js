@@ -5,10 +5,10 @@ import { alchemyProvider } from "wagmi/providers/alchemy";
 import { publicProvider } from "wagmi/providers/public";
 
 const { chains, publicClient } = configureChains(
-	[localhost /*sepolia*/],
+	[localhost, sepolia],
 
 	[
-		/*alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API }),*/
+		alchemyProvider({ apiKey: process.env.NEXT_PUBLIC_ALCHEMY_API }),
 		publicProvider(),
 	]
 );

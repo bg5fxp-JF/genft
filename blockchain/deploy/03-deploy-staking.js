@@ -29,12 +29,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 	let blocksCon = 1;
 	if (!developmentChains.includes(network.name)) blocksCon = 6;
 
-	// const tokgenAddress1 = (await fixture(["all"])).Tokgen.address;
-	// const genftAddress = (await fixture(["genft"])).GENFT.address;
-	// const tokgenAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
-	// const genftAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512";
 	const [tokgenAddress, genftAddress] = await getAddresses();
-
 	const args = [tokgenAddress, genftAddress];
 	const staking = await deploy("Staking", {
 		from: deployer,

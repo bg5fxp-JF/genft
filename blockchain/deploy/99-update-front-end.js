@@ -1,6 +1,9 @@
-const { deployments, network } = require("hardhat");
+const { deployments, network, getNamedAccounts } = require("hardhat");
+
 require("dotenv").config();
 const fs = require("fs");
+const { developmentChains } = require("../helper-hardhat-config");
+const { verify } = require("../utils/verify");
 
 const FRONTEND_TOKGEN_ADDRESSES_FILE =
 	"../frontend/src/app/constants/tokgen-contractAddresses.json";
@@ -14,20 +17,52 @@ const FRONTEND_GENFT_ABI_FILE = "../frontend/src/app/constants/genft-abi.json";
 const FRONTEND_STAKING_ABI_FILE =
 	"../frontend/src/app/constants/staking-abi.json";
 
-async function updateAbi() {
-	const tokegnAbi = (await deployments.fixture(["all"])).Tokgen.abi;
-	const genftAbi = (await deployments.fixture(["all"])).GENFT.abi;
-	const stakingAbi = (await deployments.fixture(["all"])).Staking.abi;
+async function update() {
+	const { deploy } = deployments;
+	const { deployer } = await getNamedAccounts();
 
-	fs.writeFileSync(FRONTEND_TOKGEN_ABI_FILE, JSON.stringify(tokegnAbi));
+	const Deployments = await deployments.fixture(["prelim"]);
+	const tokgenAddress = Deployments.Tokgen.address;
+	const genftAddress = Deployments.GENFT.address;
+	const tokgenAbi = Deployments.Tokgen.abi;
+	const genftAbi = Deployments.GENFT.abi;
+
+	console.log("Deploying Staking Contract");
+	let blocksCon = 1;
+	if (!developmentChains.includes(network.name)) blocksCon = 6;
+	const args = [tokgenAddress, genftAddress];
+	const staking = await deploy("Staking", {
+		from: deployer,
+		args: args,
+		log: true,
+		waitConfirmations: blocksCon,
+	});
+	const stakingAddress = staking.address;
+	const stakingAbi = staking.abi;
+	console.log(`Deployed at staking at ${stakingAddress}`);
+	if (
+		!developmentChains.includes(network.name) &&
+		process.env.ETHERSCAN_API_KEY
+	) {
+		// verify
+		await verify(stakingAddress, [tokgenAddress, genftAddress]);
+	}
+
+	console.log("===========================");
+	console.log("Updating ABI");
+	updateAbi(tokgenAbi, genftAbi, stakingAbi);
+	console.log("===========================");
+	console.log("Updating Adresses");
+	updateContractAddresses(tokgenAddress, genftAddress, stakingAddress);
+}
+
+function updateAbi(tokgenAbi, genftAbi, stakingAbi) {
+	fs.writeFileSync(FRONTEND_TOKGEN_ABI_FILE, JSON.stringify(tokgenAbi));
 	fs.writeFileSync(FRONTEND_GENFT_ABI_FILE, JSON.stringify(genftAbi));
 	fs.writeFileSync(FRONTEND_STAKING_ABI_FILE, JSON.stringify(stakingAbi));
 }
 
-async function updateContractAddresses() {
-	const tokgenAddress = (await deployments.fixture(["all"])).Tokgen.address;
-	const genftAddress = (await deployments.fixture(["all"])).GENFT.address;
-	const stakingAddress = (await deployments.fixture(["all"])).Staking.address;
+function updateContractAddresses(tokgenAddress, genftAddress, stakingAddress) {
 	const chainId = network.config.chainId.toString();
 	const currentTokgenAddress = JSON.parse(
 		fs.readFileSync(FRONTEND_TOKGEN_ADDRESSES_FILE, "utf8")
@@ -77,8 +112,7 @@ async function updateContractAddresses() {
 module.exports = async function () {
 	if (process.env.UPDATE_FRONTEND) {
 		console.log("Updating frontend");
-		await updateAbi();
-		await updateContractAddresses();
+		await update();
 	}
 };
 
