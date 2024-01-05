@@ -50,8 +50,10 @@ export default function Listings() {
 					owner = "You";
 				}
 
-				const uri = `https://firebasestorage.googleapis.com/v0/b/${storageBuckets[chainId]}.appspot.com/o/metadata%2F${id}.json?alt=media`;
-				console.log(uri);
+				const uri = `https://firebasestorage.googleapis.com/v0/b/${
+					storageBuckets[chainId] + "/o/metadata%2F" + id
+				}.json?alt=media`;
+
 				getMetadata(uri, owner);
 			}
 		}

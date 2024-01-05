@@ -12,8 +12,8 @@ export const imgs = [
 ];
 
 export const storageBuckets = {
-	31337: "genft-7f0a3",
-	11155111: "genfttestnet",
+	31337: "genft-7f0a3.appspot.com",
+	11155111: "genfttestnet.appspot.com",
 };
 // export const storageBuckets1 = {
 // 	31337: "gs://genft-7f0a3.appspot.com",
