@@ -59,7 +59,7 @@ export default function Stake() {
 				});
 
 				if (isStaked || owner == address) {
-					const uri = `https://firebasestorage.googleapis.com/v0/b/${storageBuckets[chainId]}.appspot.com/o/metadata%2F${id}.json?alt=media`;
+					const uri = `https://firebasestorage.googleapis.com/v0/b/${storageBuckets[chainId]}/o/metadata%2F${id}.json?alt=media`;
 					getMetadata(uri);
 				}
 			}
