@@ -5,6 +5,7 @@ import { useAccount, useContractRead, useNetwork } from "wagmi";
 import { genft_contractAddresses } from "../constants/contracts";
 import { genft_abi } from "../constants/abis";
 import { readContract } from "@wagmi/core";
+import { storageBuckets } from "../constants/constants";
 
 export default function Listings() {
 	const { address, isConnected } = useAccount();
@@ -49,7 +50,7 @@ export default function Listings() {
 					owner = "You";
 				}
 
-				const uri = `https://firebasestorage.googleapis.com/v0/b/genft-7f0a3.appspot.com/o/metadata%2F${id}.json?alt=media`;
+				const uri = `https://firebasestorage.googleapis.com/v0/b/${storageBuckets[chainId]}.appspot.com/o/metadata%2F${id}.json?alt=media`;
 				getMetadata(uri, owner);
 			}
 		}

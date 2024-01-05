@@ -76,7 +76,7 @@ export default function ImageMint() {
 	}
 
 	const firebaseConfig = {
-		storageBucket: storageBuckets[chainId],
+		storageBucket: `gs://${storageBuckets[chainId]}.appspot.com`,
 	};
 
 	// Initialize Firebase

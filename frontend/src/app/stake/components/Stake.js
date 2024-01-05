@@ -8,6 +8,7 @@ import {
 } from "@/app/constants/contracts";
 import { genft_abi, staking_abi } from "@/app/constants/abis";
 import StakeCard from "./StakeCard";
+import { storageBuckets } from "@/app/constants/constants";
 
 export default function Stake() {
 	const { address, isConnected } = useAccount();
@@ -58,7 +59,7 @@ export default function Stake() {
 				});
 
 				if (isStaked || owner == address) {
-					const uri = `https://firebasestorage.googleapis.com/v0/b/genft-7f0a3.appspot.com/o/metadata%2F${id}.json?alt=media`;
+					const uri = `https://firebasestorage.googleapis.com/v0/b/${storageBuckets[chainId]}.appspot.com/o/metadata%2F${id}.json?alt=media`;
 					getMetadata(uri);
 				}
 			}
