@@ -102,10 +102,13 @@ export default function Stake() {
 	}
 	return (
 		<section className="relative  flex flex-col items-center  w-full max-w-[1440px] min-h-screen gap-8  mx-auto px-6  bg-bg1 sm:px-16 ">
-			<div className="relative flex flex-col w-full max-w-[550px] gap-y-4 mt-32 pb-6  z-40">
+			<div className="relative flex flex-col w-full max-w-[550px] gap-y-2 mt-32 pb-6  z-40">
 				<h3 className="text-4xl text-txt1 font-semibold text-center md:text-6xl ">
 					Stake Your <span className="text-primary1">N</span>FTs
 				</h3>
+				<p className="text-primary2 text-sm">
+					*Import Tokens From 0x685b663e383Cf9cC331D0B52bAa04Ca5317e2134
+				</p>
 			</div>
 			<div className="flex flex-col w-full gap-y-5">
 				{nfts.map(({ name, image, description }) => {
