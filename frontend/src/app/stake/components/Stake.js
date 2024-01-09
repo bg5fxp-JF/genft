@@ -106,7 +106,7 @@ export default function Stake() {
 				<h3 className="text-4xl text-txt1 font-semibold text-center md:text-6xl ">
 					Stake Your <span className="text-primary1">N</span>FTs
 				</h3>
-				<p className="text-primary2 text-sm">
+				<p className="text-primary2 text-center text-sm">
 					*Import Tokens From 0x685b663e383Cf9cC331D0B52bAa04Ca5317e2134
 				</p>
 			</div>
