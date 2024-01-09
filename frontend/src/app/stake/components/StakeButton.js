@@ -41,6 +41,7 @@ export default function StakeButton({ tokenId }) {
 		address: stakingAddress,
 		abi: staking_abi,
 		functionName: "stake",
+		account: address,
 		args: [tokenId],
 		onError(error) {
 			toast.error(error.message);
@@ -53,6 +54,7 @@ export default function StakeButton({ tokenId }) {
 		address: stakingAddress,
 		abi: staking_abi,
 		functionName: "unstake",
+		account: address,
 		args: [tokenId],
 		onError(error) {
 			toast.error(error.message);
@@ -67,6 +69,7 @@ export default function StakeButton({ tokenId }) {
 		address: genftAddress,
 		abi: genft_abi,
 		functionName: "approve",
+		account: address,
 		args: [stakingAddress, tokenId],
 		onError(error) {
 			toast.error(error.message);
