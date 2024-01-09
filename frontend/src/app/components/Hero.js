@@ -7,7 +7,7 @@ import MouseImageTrail from "./MouseImageTrail";
 export default function Hero() {
 	return (
 		<MouseImageTrail renderImageBuffer={50} rotationRange={25} images={imgs}>
-			<section className="relative  flex flex-col items-center justify-center w-full max-w-[1440px] min-h-screen max-h-screen gap-8  mx-auto px-6  bg-bg1 sm:px-16 ">
+			<section className=" relative  flex flex-col items-center justify-center w-full max-w-[1440px] h-screen gap-8  mx-auto px-6 sm:px-16 bg-bg1">
 				<motion.div
 					initial={{ opacity: 0, y: 30 }}
 					whileInView={{ opacity: 1, y: 0 }}

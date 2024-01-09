@@ -7,13 +7,13 @@ import { usePathname } from "next/navigation";
 export default function Navbar() {
 	const pathname = usePathname();
 	return (
-		<header className="w-full absolute z-50">
+		<header className=" absolute flex justify-center w-full z-50">
 			<motion.nav
 				initial={
 					pathname == "/" ? { opacity: 0, y: -10 } : { opacity: 1, y: 0 }
 				}
 				animate={{ opacity: 1, y: 0 }}
-				className="flex justify-between items-center max-w-[1440px] mx-3 my-3 px-3 py-4 bg-bg3 backdrop-filter backdrop-blur-sm bg-opacity-10 rounded-lg text-txt1 sm:px-8 sm:mx-8"
+				className="flex justify-between items-center max-w-[1440px] w-full mx-3 my-3 px-3 py-4 bg-bg3 backdrop-filter backdrop-blur-sm bg-opacity-10 rounded-lg text-txt1 sm:px-8 sm:mx-8"
 			>
 				<div className="flex gap-x-10 items-center justify-between ">
 					<Link href="/" className="text-2xl font-bold">

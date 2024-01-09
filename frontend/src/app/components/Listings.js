@@ -73,7 +73,7 @@ export default function Listings() {
 	}
 
 	return (
-		<section className="relative  flex flex-col gap-y-5 items-center w-full max-w-[1440px] min-h-screen gap-8  mx-auto px-6  bg-bg1 sm:px-16 ">
+		<section className="relative  flex flex-col gap-y-5 items-center w-full max-w-[1440px] min-h-screen gap-8  mx-auto px-6  sm:px-16  bg-bg1 ">
 			<h3 className=" mt-24 text-3xl text-txt1 font-semibold text-center md:text-6xl ">
 				Mi<span className="text-primary1">n</span>ted
 				<span className="text-primary1"> N</span>FTs
