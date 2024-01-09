@@ -3,13 +3,15 @@ import { useEffect } from "react";
 import { useAccount, useConnect, useDisconnect } from "wagmi";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { IoExitOutline } from "react-icons/io5";
+import { toast } from "react-toastify";
+import Link from "next/link";
 
 export default function ConnectButton({ stylesDisconnected, stylesConnected }) {
 	function formatAddress(address) {
 		return address.slice(0, 6) + "..." + address.slice(address.length - 4);
 	}
 
-	const { connect } = useConnect({
+	const { connect, connectors } = useConnect({
 		connector: new MetaMaskConnector(),
 	});
 	const { disconnect } = useDisconnect();
@@ -51,8 +53,22 @@ export default function ConnectButton({ stylesDisconnected, stylesConnected }) {
 	return (
 		<button
 			onClick={() => {
-				connect();
-				window.localStorage.setItem("connected", "inject");
+				if (!connectors[0].ready) {
+					toast.warn(
+						<div>
+							Metamask Is Not Installed.{" "}
+							<Link
+								href="https://metamask.io/download/"
+								className="text-primary1 transition-all hover:underline "
+							>
+								Install Here!
+							</Link>
+						</div>
+					);
+				} else {
+					connect();
+					window.localStorage.setItem("connected", "inject");
+				}
 			}}
 			className={`text-reg flex  px-4 py-2  rounded-full transition-all active:scale-95 ${stylesDisconnected} `}
 		>
