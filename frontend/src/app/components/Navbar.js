@@ -3,9 +3,13 @@ import Link from "next/link";
 import ConnectButton from "./ConnectButton";
 import { motion } from "framer-motion";
 import { usePathname } from "next/navigation";
+import { RxHamburgerMenu } from "react-icons/rx";
+import { useContext } from "react";
+import { MobileContext } from "../contexts/MobileNavContextProvider";
 
 export default function Navbar() {
 	const pathname = usePathname();
+	const [isOpen, setIsOpen] = useContext(MobileContext);
 	return (
 		<header className=" absolute flex justify-center w-full z-50">
 			<motion.nav
@@ -33,6 +37,15 @@ export default function Navbar() {
 				<ConnectButton
 					stylesDisconnected="hidden text-white bg-gradient-160 from-primary2 from-20% to-primary1 md:flex "
 					stylesConnected="hidden md:flex"
+				/>
+
+				<RxHamburgerMenu
+					className="flex md:hidden cursor-pointer"
+					size={25}
+					fill="white"
+					onClick={() => {
+						setIsOpen(true);
+					}}
 				/>
 			</motion.nav>
 		</header>

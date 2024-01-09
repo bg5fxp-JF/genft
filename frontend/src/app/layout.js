@@ -1,5 +1,7 @@
+import MobileNav from "./components/MobileNav";
 import Navbar from "./components/Navbar";
 import NewToaster from "./components/NewToaster";
+import MobileNavContextProvider from "./contexts/MobileNavContextProvider";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -13,7 +15,10 @@ export default function RootLayout({ children }) {
 		<html lang="en">
 			<body>
 				<Providers>
-					<Navbar />
+					<MobileNavContextProvider>
+						<Navbar />
+						<MobileNav />
+					</MobileNavContextProvider>
 					{children}
 					<NewToaster />
 				</Providers>
