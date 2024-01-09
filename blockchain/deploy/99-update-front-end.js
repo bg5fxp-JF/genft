@@ -48,6 +48,11 @@ async function update() {
 		await verify(stakingAddress, [tokgenAddress, genftAddress]);
 	}
 
+	console.log("Sending Tokgen to Staking Contract...");
+	const tokgen = await ethers.getContractAt("Tokgen", tokgenAddress);
+	await tokgen.transfer(stakingAddress, ethers.parseEther("10000"));
+	console.log("Sent");
+
 	console.log("===========================");
 	console.log("Updating ABI");
 	updateAbi(tokgenAbi, genftAbi, stakingAbi);

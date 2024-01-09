@@ -54,7 +54,7 @@ export default function StakeButton({ tokenId }) {
 		address: stakingAddress,
 		abi: staking_abi,
 		functionName: "unstake",
-		account: address,
+
 		args: [tokenId],
 		onError(error) {
 			toast.error(error.message);
