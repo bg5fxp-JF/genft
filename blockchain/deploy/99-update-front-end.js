@@ -50,7 +50,7 @@ async function update() {
 
 	console.log("Sending Tokgen to Staking Contract...");
 	const tokgen = await ethers.getContractAt("Tokgen", tokgenAddress);
-	await tokgen.transfer(stakingAddress, ethers.parseEther("10000"));
+	await tokgen.transfer(stakingAddress, ethers.parseEther("100000"));
 	console.log("Sent");
 
 	console.log("===========================");
