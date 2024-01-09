@@ -9,7 +9,7 @@ import axios from "axios";
 import FormData from "form-data";
 import { parseEther } from "viem";
 import { toast } from "react-toastify";
-import { initializeApp } from "firebase/app";
+import { getApps, initializeApp } from "firebase/app";
 import { getStorage, ref, uploadString, deleteObject } from "firebase/storage";
 import {
 	useAccount,
@@ -81,7 +81,12 @@ export default function ImageMint() {
 	};
 
 	// Initialize Firebase
-	const app = initializeApp(firebaseConfig);
+	let app;
+	if (getApps().length == 0) {
+		app = initializeApp(firebaseConfig);
+	} else {
+		app = getApps()[0];
+	}
 
 	// Initialize Cloud Storage and get a reference to the service
 	const storage = getStorage(app);
