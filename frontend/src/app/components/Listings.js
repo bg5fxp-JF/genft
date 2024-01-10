@@ -29,7 +29,9 @@ export default function Listings() {
 	useEffect(() => {
 		let _nfts = [];
 		async function getMetadata(uri, owner) {
-			const response = await fetch(uri, { mode: "no-cors" });
+			const response = await fetch(
+				`https://cors-anywhere.herokuapp.com/${uri}`
+			);
 			const metadata = await response.json();
 			metadata.uri = uri;
 			metadata.owner = owner;
