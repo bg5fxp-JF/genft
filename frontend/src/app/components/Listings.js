@@ -5,7 +5,7 @@ import { useAccount, useContractRead, useNetwork } from "wagmi";
 import { genft_contractAddresses } from "../constants/contracts";
 import { genft_abi } from "../constants/abis";
 import { readContract } from "@wagmi/core";
-import { CORSANYWHERE, storageBuckets } from "../constants/constants";
+import { storageBuckets } from "../constants/constants";
 
 export default function Listings() {
 	const { address, isConnected } = useAccount();
@@ -29,7 +29,7 @@ export default function Listings() {
 	useEffect(() => {
 		let _nfts = [];
 		async function getMetadata(uri, owner) {
-			const response = await fetch(CORSANYWHERE + uri);
+			const response = await fetch(uri);
 			const metadata = await response.json();
 			metadata.uri = uri;
 			metadata.owner = owner;

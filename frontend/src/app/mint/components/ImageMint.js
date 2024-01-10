@@ -19,7 +19,7 @@ import {
 } from "wagmi";
 import { genft_abi } from "@/app/constants/abis";
 import { genft_contractAddresses } from "@/app/constants/contracts";
-import { CORSANYWHERE, storageBuckets } from "@/app/constants/constants";
+import { storageBuckets } from "@/app/constants/constants";
 
 export default function ImageMint() {
 	const { isConnected } = useAccount();
@@ -130,7 +130,7 @@ export default function ImageMint() {
 
 		const data = new FormData();
 
-		const response = await axiosInstance(CORSANYWHERE + sourceUrl, {
+		const response = await axiosInstance(sourceUrl, {
 			method: "GET",
 			responseType: "arraybuffer",
 		});
@@ -150,7 +150,7 @@ export default function ImageMint() {
 
 		try {
 			const res = await axios.post(
-				`${CORSANYWHERE}https://api.pinata.cloud/pinning/pinFileToIPFS`,
+				`https://api.pinata.cloud/pinning/pinFileToIPFS`,
 				data,
 				{
 					maxBodyLength: "Infinity",
