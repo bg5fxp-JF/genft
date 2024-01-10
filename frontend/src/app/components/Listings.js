@@ -29,7 +29,7 @@ export default function Listings() {
 	useEffect(() => {
 		let _nfts = [];
 		async function getMetadata(uri, owner) {
-			const response = await fetch(uri);
+			const response = await fetch(uri, { mode: "no-cors" });
 			const metadata = await response.json();
 			metadata.uri = uri;
 			metadata.owner = owner;
