@@ -8,7 +8,7 @@ import {
 } from "@/app/constants/contracts";
 import { genft_abi, staking_abi } from "@/app/constants/abis";
 import StakeCard from "./StakeCard";
-import { storageBuckets } from "@/app/constants/constants";
+import { CORSANYWHERE, storageBuckets } from "@/app/constants/constants";
 
 export default function Stake() {
 	const { address, isConnected } = useAccount();
@@ -36,7 +36,7 @@ export default function Stake() {
 		let _nfts = [];
 		setNfts([]);
 		async function getMetadata(uri) {
-			const response = await fetch(uri);
+			const response = await fetch(CORSANYWHERE + uri);
 			const metadata = await response.json();
 			_nfts.push(metadata);
 			setNfts(_nfts);

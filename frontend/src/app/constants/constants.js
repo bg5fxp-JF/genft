@@ -15,6 +15,8 @@ export const storageBuckets = {
 	31337: "genft-7f0a3.appspot.com",
 	11155111: "genfttestnet.appspot.com",
 };
+
+export const CORSANYWHERE = "https://cors-anywhere.herokuapp.com/";
 // export const storageBuckets1 = {
 // 	31337: "gs://genft-7f0a3.appspot.com",
 // 	11155111: "gs://genfttestnet.appspot.com",
