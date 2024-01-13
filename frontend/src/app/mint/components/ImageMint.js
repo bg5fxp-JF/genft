@@ -103,24 +103,24 @@ export default function ImageMint() {
 				return 0;
 			} else {
 				setGeneratingImg(true);
-				// const response = await openai.images.generate({
-				// 	model: "dall-e-3",
-				// 	prompt: userPrompt,
-				// 	n: 1,
-				// 	size: "1024x1024",
-				// });
+				const response = await openai.images.generate({
+					model: "dall-e-3",
+					prompt: userPrompt,
+					n: 1,
+					size: "1024x1024",
+				});
 
-				await setTimeout(() => {
-					//C - 1 second later
-					setImageUrl(
-						"https://img.freepik.com/free-photo/3d-rendering-dog-puzzle_23-2150780914.jpg?uid=R131559868&semt=ais_ai_generated"
-					);
-					setGeneratingImg(false);
-				}, 2000);
+				// await setTimeout(() => {
+				// 	//C - 1 second later
+				// 	setImageUrl(
+				// 		"https://img.freepik.com/free-photo/3d-rendering-dog-puzzle_23-2150780914.jpg?uid=R131559868&semt=ais_ai_generated"
+				// 	);
+				// 	setGeneratingImg(false);
+				// }, 2000);
 
-				// setImageUrl(response.data[0].url);
+				setImageUrl(response.data[0].url);
 
-				// setGeneratingImg(false);
+				setGeneratingImg(false);
 			}
 		}
 	}
