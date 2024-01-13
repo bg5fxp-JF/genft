@@ -102,24 +102,24 @@ export default function ImageMint() {
 				return 0;
 			} else {
 				setGeneratingImg(true);
-				const response = await openai.images.generate({
-					model: "dall-e-3",
-					prompt: userPrompt,
-					n: 1,
-					size: "1024x1024",
-				});
+				// const response = await openai.images.generate({
+				// 	model: "dall-e-3",
+				// 	prompt: userPrompt,
+				// 	n: 1,
+				// 	size: "1024x1024",
+				// });
 
-				// await setTimeout(() => {
-				// 	//C - 1 second later
-				// 	setImageUrl(
-				// 		"https://img.freepik.com/free-photo/3d-rendering-dog-puzzle_23-2150780914.jpg?uid=R131559868&semt=ais_ai_generated"
-				// 	);
-				// 	setGeneratingImg(false);
-				// }, 2000);
+				await setTimeout(() => {
+					//C - 1 second later
+					setImageUrl(
+						"https://img.freepik.com/free-photo/3d-rendering-dog-puzzle_23-2150780914.jpg?uid=R131559868&semt=ais_ai_generated"
+					);
+					setGeneratingImg(false);
+				}, 2000);
 
-				setImageUrl(response.data[0].url);
+				// setImageUrl(response.data[0].url);
 
-				setGeneratingImg(false);
+				// setGeneratingImg(false);
 			}
 		}
 	}
@@ -130,11 +130,14 @@ export default function ImageMint() {
 
 		const data = new FormData();
 
-		const response = await axiosInstance(sourceUrl, {
+		const response = await fetch(`/api/mint?sourceUrl=${sourceUrl}`, {
 			method: "GET",
 			responseType: "arraybuffer",
 		});
-		const blob = new Blob([response.data], { type: "image/png" });
+
+		const res = await response.arrayBuffer();
+
+		const blob = new Blob([res], { type: "image/png" });
 
 		data.append(`file`, blob);
 
@@ -180,7 +183,6 @@ export default function ImageMint() {
 			const snapshot = await uploadString(storageRef, jsonContent, "raw", {
 				contentType: "application/json",
 			});
-
 			// console.log(snapshot.metadata.fullPath);
 		} catch (error) {
 			console.log("Error uploading JSON:", error);
@@ -191,7 +193,6 @@ export default function ImageMint() {
 		setMinting(true);
 
 		const imageUri = await uploadFileToPinata(sourceUrl);
-
 		await uploadMetadataToFirebase(imageUri).catch();
 
 		write();
