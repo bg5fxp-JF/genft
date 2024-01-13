@@ -1,6 +1,8 @@
 import axiosRetry from "axios-retry";
 import axios from "axios";
 import { NextResponse } from "next/server";
+import { getApps, initializeApp } from "firebase/app";
+import { getStorage, ref, uploadString, deleteObject } from "firebase/storage";
 
 export async function GET(request) {
 	const searchParams = request.nextUrl.searchParams;
