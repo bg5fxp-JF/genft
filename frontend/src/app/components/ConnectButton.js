@@ -1,6 +1,6 @@
 "use client";
 import { useEffect } from "react";
-import { useAccount, useConnect, useDisconnect } from "wagmi";
+import { useAccount, useConnect, useDisconnect, useNetwork } from "wagmi";
 import { MetaMaskConnector } from "wagmi/connectors/metaMask";
 import { IoExitOutline } from "react-icons/io5";
 import { toast } from "react-toastify";
@@ -17,6 +17,9 @@ export default function ConnectButton({ stylesDisconnected, stylesConnected }) {
 	const { disconnect } = useDisconnect();
 
 	const { address, isConnected } = useAccount();
+	const { chain } = useNetwork();
+
+	const chainId = isConnected ? chain.id : 0;
 
 	useEffect(() => {
 		if (isConnected) return;
@@ -26,6 +29,14 @@ export default function ConnectButton({ stylesDisconnected, stylesConnected }) {
 			}
 		}
 	}, [address]);
+
+	useEffect(() => {
+		if (isConnected && chainId != 11155111) {
+			toast.warn(
+				`Currently connected to the ${chain.name} Network. Change to Sepolia Test Network (11155111)`
+			);
+		}
+	}, [chainId]);
 
 	// const isConnected = false;
 
