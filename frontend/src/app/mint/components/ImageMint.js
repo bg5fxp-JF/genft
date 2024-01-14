@@ -87,12 +87,24 @@ export default function ImageMint() {
 				return 0;
 			} else {
 				setGeneratingImg(true);
-				const response = await openai.images.generate({
-					model: "dall-e-3",
-					prompt: userPrompt,
-					n: 1,
-					size: "1024x1024",
-				});
+
+				try {
+					const response = await openai.images.generate({
+						model: "dall-e-3",
+						prompt: userPrompt,
+						n: 1,
+						size: "1024x1024",
+					});
+					setImageUrl(response.data[0].url);
+
+					setGeneratingImg(false);
+				} catch (error) {
+					toast.warn(error.message);
+
+					setImageUrl("/");
+
+					setGeneratingImg(false);
+				}
 
 				// await setTimeout(() => {
 				// 	//C - 1 second later
@@ -104,10 +116,6 @@ export default function ImageMint() {
 				// 	);
 				// 	setGeneratingImg(false);
 				// }, 2000);
-
-				setImageUrl(response.data[0].url);
-
-				setGeneratingImg(false);
 			}
 		}
 	}
