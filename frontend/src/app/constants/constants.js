@@ -13,10 +13,11 @@ export const imgs = [
 
 export const storageBuckets = {
 	31337: "genft-7f0a3.appspot.com",
-	11155111: "genfttestnet.appspot.com",
+	// 11155111: "genfttestnet.appspot.com",
+	11155111: "genftsepolia.appspot.com",
 };
 
-export const CORSANYWHERE = "https://cors-anywhere.herokuapp.com/";
+export const CORSANYWHERE = "https://corsproxy.io/?";
 // export const storageBuckets1 = {
 // 	31337: "gs://genft-7f0a3.appspot.com",
 // 	11155111: "gs://genfttestnet.appspot.com",

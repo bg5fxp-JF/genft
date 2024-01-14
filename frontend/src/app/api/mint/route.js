@@ -17,17 +17,15 @@ export async function GET(request) {
 		// });
 
 		const response = await fetch(sourceUrl);
+		const blob = await response.blob();
+		// const buffer = Buffer.from(await blob.arrayBuffer());
 
-		if (!response.ok) {
-			throw new Error(`HTTP error! status: ${response.status}`);
-		}
-
-		const data = await response.arrayBuffer();
+		// const data = await response.arrayBuffer();
 
 		// return res.status(200).json({ sourceUrl: sourceUrl });
 
 		// return new Response(Buffer.from(data));
-		return new NextResponse(data);
+		return new NextResponse(blob);
 	} catch (err) {
 		return NextResponse.json({ error: err.message });
 	}

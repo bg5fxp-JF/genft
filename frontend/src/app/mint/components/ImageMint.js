@@ -9,8 +9,7 @@ import axios from "axios";
 import FormData from "form-data";
 import { parseEther } from "viem";
 import { toast } from "react-toastify";
-import { getApps, initializeApp } from "firebase/app";
-import { getStorage, ref, uploadString, deleteObject } from "firebase/storage";
+import { ref, uploadString, deleteObject } from "firebase/storage";
 import {
 	useAccount,
 	useContractRead,
@@ -19,7 +18,8 @@ import {
 } from "wagmi";
 import { genft_abi } from "@/app/constants/abis";
 import { genft_contractAddresses } from "@/app/constants/contracts";
-import { storageBuckets } from "@/app/constants/constants";
+import { CORSANYWHERE, storageBuckets } from "@/app/constants/constants";
+import { storage } from "@/app/firebase";
 
 export default function ImageMint() {
 	const { isConnected } = useAccount();
@@ -76,22 +76,6 @@ export default function ImageMint() {
 		setUserPrompt(e.target.value);
 	}
 
-	const firebaseConfig = {
-		storageBucket: `gs://${storageBuckets[chainId]}`,
-	};
-
-	// Initialize Firebase
-	let app;
-
-	if (getApps().length == 0) {
-		app = initializeApp(firebaseConfig);
-	} else {
-		app = getApps()[0];
-	}
-
-	// Initialize Cloud Storage and get a reference to the service
-	const storage = getStorage(app);
-
 	async function imageGeneration() {
 		if (!isConnected) {
 			toast.warn("Connect Wallet First");
@@ -112,8 +96,11 @@ export default function ImageMint() {
 
 				// await setTimeout(() => {
 				// 	//C - 1 second later
+				// 	// setImageUrl(
+				// 	// 	"https://img.freepik.com/free-photo/3d-rendering-dog-puzzle_23-2150780914.jpg?uid=R131559868&semt=ais_ai_generated"
+				// 	// );
 				// 	setImageUrl(
-				// 		"https://img.freepik.com/free-photo/3d-rendering-dog-puzzle_23-2150780914.jpg?uid=R131559868&semt=ais_ai_generated"
+				// 		"https://img.freepik.com/free-photo/cyberpunk-warrior-woman-portrait_23-2150712480.jpg?uid=R131559868&semt=ais_ai_generated"
 				// 	);
 				// 	setGeneratingImg(false);
 				// }, 2000);
@@ -131,14 +118,22 @@ export default function ImageMint() {
 
 		const data = new FormData();
 
-		const response = await fetch(`/api/mint?sourceUrl=${sourceUrl}`, {
-			method: "GET",
-			responseType: "arraybuffer",
-		});
+		// const response = await fetch(`/api/mint?sourceUrl=${sourceUrl}`, {
+		// 	method: "GET",
+		// 	responseType: "arraybuffer",
+		// });
 
-		const res = await response.arrayBuffer();
+		const response = await axiosInstance(
+			CORSANYWHERE + encodeURIComponent(sourceUrl),
+			{
+				method: "GET",
+				responseType: "arraybuffer",
+			}
+		);
 
-		const blob = new Blob([res], { type: "image/png" });
+		// const res = await response.arrayBuffer();
+
+		const blob = new Blob([response.data], { type: "image/png" });
 
 		data.append(`file`, blob);
 
